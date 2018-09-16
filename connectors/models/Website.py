@@ -124,7 +124,7 @@ class Website(ABC):
         pass
 
     @abstractmethod
-    def refresh_dict(self, course):
+    def refresh_dict(self):
         """ This method should contain steps to populate the course_dict and its exercise_dict ready for retrieval"""
         pass
 
