@@ -48,8 +48,8 @@ class Website(ABC):
 
     def get_course(self, course_name):
         """ Returns the Course Object from course_dict who's name matches given course_name """
-        self.existing = self.in_course_dict(course_name)
-        if self.existing:
+        _existing = self.in_course_dict(course_name)
+        if _existing:
             return self.course_dict.get(course_name)
 
 
@@ -63,28 +63,28 @@ class Website(ABC):
 
     def create_course(self, course_name,  language="Python", exercise_dict={}):
         """ Creates a Course Object of the given name and returns it to the user """
-        self.new_course = Course( self.get_domain(), course_name,  language, exercise_dict)
-        return self.new_course
+        _new_course = Course( self.get_domain(), course_name,  language, exercise_dict)
+        return _new_course
 
 
     def add_course(self, course_object):
         """ Adds an already created Course Object to the course_dict """
-        if (isinstance(course_object, Course)) & (not self.in_course_dict(self.new_course)):
+        if (isinstance(course_object, Course)) & (not self.in_course_dict(course_object.name)):
             self.course_dict[course_object.name] = course_object
 
 
     def add_course_quickly(self, course_name,  language, exercise_dict):
         """ Creates new Course Object and adds in straight to the course_dict.
         Recommended only to use if you already have the entire exercise_dict for the course"""
-        self.new_course = self.create_course( course_name, language, exercise_dict)
-        if not self.in_course_dict(self.new_course):
-            self.course_dict[self.new_course.name] = self.new_course
+        _new_course = self.create_course( course_name, language, exercise_dict)
+        if not self.in_course_dict(_new_course):
+            self.course_dict[_new_course.name] = _new_course
         
 
     def get_course_exercise_dict(self, course_title):
         """ Returns exercise list of given course """
-        self.current_course = self.get_course(course_title)
-        return self.current_course.get_exercise_dict()
+        _current_course = self.get_course(course_title)
+        return _current_course.get_exercise_dict()
         
      
         
@@ -109,13 +109,19 @@ class Website(ABC):
             assert title in self.driver.title
         except AssertionError as ae:
             print("Error: {} is not in driver.title ({})".format(title, self.get_driver.title))
-            self.get_driver.close()
+            self.close()
 
 
-    @abstractmethod
-    def create_driver(self):
+    def close(self):
+        self.get_driver().close()
+
+
+    def create_driver(self, driver=None):
         """ Create Selenium Webdriver Object"""
-        pass
+        if driver is None:
+            self.driver = webdriver.Firefox()
+        else:
+            self.driver = driver
 
     
     @abstractmethod
@@ -124,9 +130,9 @@ class Website(ABC):
         pass
 
     @abstractmethod
-    def find_course_info(self, course):
+    def refresh_dict(self, course):
         """ This method should contain steps to populate the course_dict and the exercise_dict
-        with the given course or the default course, and its information ready for retrieval"""
+        with the given course or if course equals None the default course, and its information ready for retrieval"""
         pass
 
 
