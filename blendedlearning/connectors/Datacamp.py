@@ -24,7 +24,7 @@ class Datacamp(Website):
         WebDriverWait(self.get_driver(), 10).until_not(EC.title_contains("Sign in"))
 
 
-    def refresh_dict(self, course):
+    def refresh_dict(self, course=None, only_completed=True):
         """ This method should contain steps to populate the course_dict and the exercise_dict
         with the given course or if course equals None the default course, and its information ready for retrieval"""
         self.course_dict.clear()
@@ -44,17 +44,24 @@ class Datacamp(Website):
             if _link.text == "View Chapter Details":
                 _link.click()
         _completed_exercises = self.get_driver().find_elements_by_class_name("course-outline__exercise modal--exercise__completed")
+        _is_current_completed = self.get_driver().find_element_by_class_name("course-outline__exercise.modal--exercise__current.modal--exercise__completed")
+        if _is_current_completed.size != 0:
+            _completed_exercises.append(_is_current_completed)
+            print(_is_current_completed.text)
+        print(len(_completed_exercises))
         if not len(_completed_exercises) == 0:
             for _completed in _completed_exercises:
                 _name = _completed.find_element_by_class_name("modal--exercise-title")
+                print(_name)
                 exercise = Exercise(_name.text, self.get_domain(), parent_course=_course_object.get_name(), completed=True)
                 _course_object.add_exercise(exercise)
-        _exercises = self.get_driver().find_elements_by_class_name("modal--exercises")
-        for _exs in _exercises:
-            _list = _exs.find_elements_by_class_name("modal--exercise-title")
-            for _item in _list:
-                exercise = Exercise(_item.text, self.get_domain(), parent_course=_course_object.get_name())
-                _course_object.add_exercise(exercise)
+        if not only_completed:
+            _exercises = self.get_driver().find_elements_by_class_name("modal--exercises")
+            for _exs in _exercises:
+                _list = _exs.find_elements_by_class_name("modal--exercise-title")
+                for _item in _list:
+                    exercise = Exercise(_item.text, self.get_domain(), parent_course=_course_object.get_name())
+                    _course_object.add_exercise(exercise)
         self.add_course(_course_object)
 
         # # # Now log out

@@ -50,7 +50,7 @@ class Collector():
         # print(_class)
         return _class
 
-    def get_results(self, driver=None):
+    def get_results(self, driver=None, only_completed=True):
         self.exercises.clear()
         for file in self.file_list:
             _class = self.dynamic_importer(file)
@@ -62,7 +62,7 @@ class Collector():
                 _user = self.default_user
                 _pass = self.default_password
             _website_object.login_now(_user, _pass)
-            _website_object.refresh_dict(_website_object.default_course)
+            _website_object.refresh_dict(only_completed=only_completed)
             _course_exercise = _website_object.get_course_exercise_dict(_website_object.default_course).values()
             for _each in _course_exercise:
                 self.exercises.append(_each)
@@ -79,7 +79,7 @@ if __name__ == "__main__":
         # If username & password are different
         # collect.add_login("domain", "username", "password")
         # collect.add_login("domain", "username", "password")
-        collect.get_results(driver)
+        collect.get_results(driver, only_completed=True)
         for exercise in collect.exercises:
             print(exercise)
     finally:

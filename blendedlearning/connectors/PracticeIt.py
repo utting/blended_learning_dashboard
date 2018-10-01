@@ -36,7 +36,7 @@ class PracticeIt(Website):
             self._course_ref[_course.text] = (_course, _course_area)
 
 
-    def _get_chapters(self, course_object):
+    def _get_chapters(self, course_object, only_completed=True):
         _course_name = course_object.get_name()
         if self.get_driver().title != "Problems - Practice-It":
             self.goto("Problems - Practice-It")
@@ -49,32 +49,35 @@ class PracticeIt(Website):
         _chapter_areas = _chapters.find_elements_by_xpath("//li[@class='categoryli']/ul[@class='categorylist']")
         for _chapter, _count, _chapter_area in zip(_chapter_headings, _chapter_counts, _chapter_areas):
             try:
-                print("Retrieving Exercises for {}".format(_chapter.text))
                 if not _count.text.find(r'/') == -1:
-                    _has_completed = True
+                    _contains_completed = True
                 else:
-                    _has_completed = False
+                    _contains_completed = False
+                if not _contains_completed and not only_completed:
+                    break
+                print("Retrieving Exercises for chapter {}".format(_chapter.text))
                 _chapter.click()
-                self._find_problems(course_object, _chapter_area, _has_completed)
+                self._find_problems(course_object, _chapter_area, _contains_completed, only_completed)
                 _chapter.click()
                 self.get_driver().implicitly_wait(2)
             except:
                 break
 
 
-    def _find_problems(self, course_object, chapter, has_completed):
+    def _find_problems(self, course_object, chapter, has_completed, only_completed=True):
         if has_completed:
             _solved_problems = chapter.find_elements_by_class_name("solvedproblem")
             for _solved in _solved_problems:
                 exercise = Exercise(_solved.text, self.get_domain(), parent_course=course_object.get_name(), completed=True)
                 course_object.add_exercise(exercise)
-        _problems = chapter.find_elements_by_class_name("problemlink")
-        for _each in _problems:
-            exercise = Exercise(_each.text, self.get_domain(), parent_course=course_object.get_name())
-            course_object.add_exercise(exercise)
+        if not only_completed:
+            _problems = chapter.find_elements_by_class_name("problemlink")
+            for _each in _problems:
+                exercise = Exercise(_each.text, self.get_domain(), parent_course=course_object.get_name())
+                course_object.add_exercise(exercise)
 
 
-    def refresh_dict(self, course):
+    def refresh_dict(self, course=None, only_completed=True):
         self.course_dict.clear()
         lang = "Java"
         if course is None:
@@ -83,7 +86,7 @@ class PracticeIt(Website):
         if course == "Javascript":
             _lang = "Javascript"
         _course_object = Course(self.domain, course, language=lang)
-        self._get_chapters(_course_object)
+        self._get_chapters(_course_object, only_completed=True)
         self.add_course(_course_object)
 
 

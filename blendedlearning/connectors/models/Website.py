@@ -130,13 +130,13 @@ class Website(ABC):
         pass
 
     @abstractmethod
-    def refresh_dict(self, course):
+    def refresh_dict(self, course=None, only_completed=True):
         """ This method should contain steps to populate the course_dict and the exercise_dict
         with the given course or if course equals None the default course, and its information ready for retrieval"""
         pass
 
 
-    def __init__(self, domain, driver=None, urls={}, course_dict={}, default_course = None):
+    def __init__(self, domain, driver=None, urls={}, course_dict={}, default_course=None):
         """
         Initializes the values for the newly created Website Object
         :param domain: Name of website

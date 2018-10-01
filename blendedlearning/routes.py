@@ -67,17 +67,15 @@ def register():
 def login():
 
 	# If username & password are the same for all sites
-	collect = Collector("username", "password")
+	collect = Collector("username@student.usc.edu.au", "password")  # Change to username and password of student
 	# If empty Collector constructor called add username & password seperately
 	# collect = Collector()
 	# collect.add_login("domain", "username", "password")
 	# collect.add_login("Datacamp", "username", "password")
 	# collect.add_login("Practice-It", "username", "password")
-	collect.get_results()
+	collect.get_results(only_completed=True)
 	for exercise in collect.exercises:
 		print(exercise)
-
-
 
 
 	if current_user.is_authenticated:
