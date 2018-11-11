@@ -68,7 +68,13 @@ class Collector():
                 self.exercises.append(_each)
             _website_object.close()
         return self.exercises
-
+    
+    def dynamic_register(self, email, password, username, firstname, lastname, telephone, school="unknown", driver=None ):
+        for file in self.file_list:
+            _class = self.dynamic_importer(file)
+            _website_object = _class(driver)
+            _website_object.register(self, email, password, username, firstname, lastname, telephone, school="unknown")
+            _website_object.close()
 
 
 if __name__ == "__main__":
