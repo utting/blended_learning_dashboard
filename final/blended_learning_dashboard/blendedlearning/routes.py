@@ -5,7 +5,6 @@ from blendedlearning.models import User, Exercise
 from flask_login import login_user, current_user, logout_user, login_required
 # from .connectors.Collector import Collector
 from .Collector import Collector
-from blendedlearning.connectors import Edx,Datacamp
 from selenium import webdriver
 
 
@@ -58,13 +57,9 @@ def register():
 					first_name=form.first_name.data, last_name=form.last_name.data,
 					telephone=form.telephone.data)
 
-		register_driver = Edx.Edx()
-		register_driver.register(user.email, user.password, user.username, user.first_name, user.last_name,user.telephone)
-		register_driver.close()
+		register_driver = Collector()
+		register_driver.dynamic_register(user.email, user.password, user.username, user.first_name, user.last_name,user.telephone)
 
-		register_driver = Datacamp.Datacamp()
-		register_driver.register(user.email, user.password, user.username, user.first_name, user.last_name, user.telephone)
-		register_driver.close()
 
 		print(user.password)
 		
