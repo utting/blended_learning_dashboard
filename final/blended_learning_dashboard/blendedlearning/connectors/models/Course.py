@@ -7,10 +7,10 @@ from .Exercise import Exercise
 class Course(Exercise):
     """A basic python course object to store course information in before saving to database"""
 
+
     def __init__(self, domain, course_name, language="Python", exercise_dict={}):
         """
         Initializes the values for the newly created Course Object
-
         :param course_name: Name of Course
         :param language: Programming Langauge of course
         :param exercise_dict: a dictionary with {key=exercise_name : value=exercise_object}

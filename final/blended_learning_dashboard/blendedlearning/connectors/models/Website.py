@@ -9,6 +9,7 @@ from selenium import webdriver
 class Website(ABC):
     """A basic python website interface object to store course information in before saving to database"""
 
+
     def set_domain(self, domain):
         """ Set domain name of the website """
         self.domain = domain
@@ -129,24 +130,28 @@ class Website(ABC):
         """ Navigates to login page and signs user in """
         pass
 
+
     @abstractmethod
     def refresh_dict(self, course=None, only_completed=True):
         """ This method should contain steps to populate the course_dict and the exercise_dict
         with the given course or if course equals None the default course, and its information ready for retrieval"""
         pass
 
+
     @abstractmethod
     def register(self, email, password, username, firstname, lastname, telephone,school="unknown" ):
         """register site"""
         pass
 
+
     @abstractmethod
     def search(self, course_name, amount=5):
         """
-        상위 amount만큼 검색한거 읽어들여서 course의 배열 반환
-        찾지 못했을시 None 반환 
+        search for a course
         """
         pass
+
+
     def __init__(self, domain, driver=None, urls={}, course_dict={}, default_course=None):
         """
         Initializes the values for the newly created Website Object

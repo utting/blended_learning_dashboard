@@ -5,6 +5,7 @@
 class Exercise(object):
     """A basic python object to store exercise information in before saving to database"""
 
+
     def __init__(self, name, domain, parent_course=None, id=None, completed=False, topics=""):
         """
         Initializes the values for the newly created Exercise Object
@@ -21,6 +22,7 @@ class Exercise(object):
         self.id = id
         self.completed = completed if type(completed) == bool else False
         self.topics = topics
+
 
     def get_parent_course(self):
         """ Returns the course_name where exercise can be found """

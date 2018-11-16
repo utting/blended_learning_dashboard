@@ -4,12 +4,9 @@
 
 import os
 import importlib
-from selenium import webdriver
-import blendedlearning.connectors as conn
-# from models.Website import Website
-# from models.Exercise import Exercise
 
-class Collector():
+
+class Collector:
     def __init__(self, default_user="", default_password=""):
         # print(os.listdir())
         self.file_list = [file for file in os.listdir("blendedlearning/connectors") if file.endswith(".py")]
@@ -22,34 +19,23 @@ class Collector():
     def add_login(self, domain, username, password):
         self.login_dict[domain] = (username, password)
 
-
     def get_login(self, domain):
         return self.login_dict.get(domain)
-
 
     def get_user(self, domain):
         return self.login_dict.get(domain)[0]
 
-
     def get_password(self, domain):
         return self.login_dict.get(domain)[1]
-
 
     def dynamic_importer(self, file_name):
         _name = file_name[:-3]
         _tester_object = importlib.__import__("blendedlearning.connectors." + _name)
-        # for item in dir(_tester_object):
-        #     print(item)
-        # print(_tester_object)
         _class_name = getattr(_tester_object, "connectors")
-        # for item in dir(_class_name):
-        #     print(item)
         _class = getattr(_class_name, _name)
         _class = getattr(_class, _name)
-        # print(_class)
         return _class
-    def search_courses(self, course_name, driver=None, amount=5):
-        pass
+
     def get_results(self, driver=None, only_completed=True):
         self.exercises.clear()
         for file in self.file_list:
@@ -80,9 +66,12 @@ class Collector():
 if __name__ == "__main__":
     # If username & password are the same for all sites
     collect = Collector("username", "password")
+
     # If username & password are different
     # collect.add_login("domain", "username", "password")
     # collect.add_login("domain", "username", "password")
+
+    # Get results for user
     collect.get_results(None, only_completed=True)
     for exercise in collect.exercises:
         print(exercise)

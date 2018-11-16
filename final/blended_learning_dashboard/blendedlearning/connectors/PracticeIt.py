@@ -8,8 +8,8 @@ from .models.Exercise import Exercise
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-class PracticeIt(Website):
 
+class PracticeIt(Website):
 
     def login_now(self, username, password):
         self.goto("Login - Practice-It")
@@ -24,17 +24,15 @@ class PracticeIt(Website):
         print("Logging in {}".format(username))
         WebDriverWait(self.get_driver(), 10).until_not(EC.title_contains("Login"))
 
-
     def _course_listing(self):
         if self.get_driver().title != "Problems - Practice-It":
             self.goto("Problems - Practice-It")
         _page_content = self.get_driver().find_element_by_id("categories")
         _course_headings = _page_content.find_elements_by_xpath("//h4[@class='categorytoplevel']/a")
-        _course_headings[len(_course_headings)-1].click()
+        _course_headings[len(_course_headings) - 1].click()
         _course_areas = _page_content.find_elements_by_xpath("//ul[@class='categorylist']")
         for _course, _course_area in zip(_course_headings, _course_areas):
             self._course_ref[_course.text] = (_course, _course_area)
-
 
     def _get_chapters(self, course_object, only_completed=True):
         _course_name = course_object.get_name()
@@ -63,12 +61,12 @@ class PracticeIt(Website):
             except:
                 break
 
-
     def _find_problems(self, course_object, chapter, has_completed, only_completed=True):
         if has_completed:
             _solved_problems = chapter.find_elements_by_class_name("solvedproblem")
             for _solved in _solved_problems:
-                exercise = Exercise(_solved.text, self.get_domain(), parent_course=course_object.get_name(), completed=True)
+                exercise = Exercise(_solved.text, self.get_domain(),
+                                    parent_course=course_object.get_name(), completed=True)
                 course_object.add_exercise(exercise)
         if not only_completed:
             _problems = chapter.find_elements_by_class_name("problemlink")
@@ -76,32 +74,31 @@ class PracticeIt(Website):
                 exercise = Exercise(_each.text, self.get_domain(), parent_course=course_object.get_name())
                 course_object.add_exercise(exercise)
 
-
     def refresh_dict(self, course=None, only_completed=True):
         self.course_dict.clear()
-        lang = "Java"
+        _lang = "Java"
         if course is None:
             course = self.default_course
         self._course_listing()
         if course == "Javascript":
             _lang = "Javascript"
-        _course_object = Course(self.domain, course, language=lang)
+        _course_object = Course(self.domain, course, language=_lang)
         self._get_chapters(_course_object, only_completed)
         self.add_course(_course_object)
-    #리캡챠 우회해야함 
-    def register(self, email, password, username, firstname, lastname, telephone,school="unknown" ):
+
+    def register(self, email, password, username, firstname, lastname, telephone, school="unknown"):
         self.get_driver().get("https://practiceit.cs.washington.edu/user/create")
         self.get_driver().find_element_by_xpath("//*[@id='createfirstname']").send_keys(firstname)
         self.get_driver().find_element_by_xpath("//*[@id='createlastname']").send_keys(lastname)
         self.get_driver().find_element_by_xpath("//*[@id='createuseremail']").send_keys(email)
         self.get_driver().find_element_by_xpath("//*[@id='createusername']").send_keys(username)
         self.get_driver().find_element_by_xpath("//*[@id='createuserpassword']").send_keys(password)
-        self.get_driver().find_element_by_xpath("//*[@id='createschoolselect']").send_keys(school+"\n")
+        self.get_driver().find_element_by_xpath("//*[@id='createschoolselect']").send_keys(school + "\n")
         self.get_driver().find_element_by_xpath("//*[@id='createuseraccepttos']").click()
         self.get_driver().find_element_by_xpath("//*[@id='recaptcha-anchor']/div[5]").click()
 
     def search(self, course_name, amount=5):
-        return None
+        return self._course_ref.keys()
 
     def __init__(self, driver=None):
         super().__init__(domain="Practice-It")
@@ -112,15 +109,14 @@ class PracticeIt(Website):
         self._course_ref = {}
 
 
-
-
 if __name__ == "__main__":
     tester = PracticeIt()
-    tester.register("asdfasdfasdfasdf@asdfasdf.com",
-        "fuckfuckfuck1234","phaphaphaphaphapha","Kafuu","Chino","+82 010 7560 0403")
-
-
-
-
-
-
+    try:
+        tester.login_now("username", "password")
+        # tester.get_driver().implicitly_wait(5)
+        tester.refresh_dict(tester.default_course)
+        exercises = tester.get_course_exercise_dict(tester.default_course).values()
+        for each in exercises:
+            print(each)
+    finally:
+        tester.close()
