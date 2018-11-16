@@ -20,10 +20,6 @@ post = [
 
 
 @app.route('/')
-def default():
-    return "<h1>hello world<h1>"
-
-
 @app.route('/home')
 def home():
     return render_template('home.html', posts=post)
